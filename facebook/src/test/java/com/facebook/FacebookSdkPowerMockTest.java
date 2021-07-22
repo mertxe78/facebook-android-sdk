@@ -34,6 +34,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ConditionVariable;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.internal.FetchedAppSettingsManager;
 import com.facebook.internal.ServerProtocol;
 import com.facebook.internal.Utility;
@@ -60,26 +61,9 @@ public final class FacebookSdkPowerMockTest extends FacebookPowerMockTestCase {
     Whitebox.setInternalState(UserSettingsManager.class, "userSettingPref", mockPreference);
     Whitebox.setInternalState(UserSettingsManager.class, "isInitialized", new AtomicBoolean(true));
     Whitebox.setInternalState(FacebookSdk.class, "callbackRequestCodeOffset", 0xface);
-    Whitebox.setInternalState(FacebookSdk.class, "sdkInitialized", false);
+    Whitebox.setInternalState(FacebookSdk.class, "sdkInitialized", new AtomicBoolean(false));
     stub(method(FetchedAppSettingsManager.class, "loadAppSettingsAsync")).toReturn(null);
     FacebookSdk.setAutoLogAppEventsEnabled(false);
-  }
-
-  @Test
-  public void testGetExecutor() {
-    final ConditionVariable condition = new ConditionVariable();
-
-    FacebookSdk.getExecutor()
-        .execute(
-            new Runnable() {
-              @Override
-              public void run() {
-                condition.open();
-              }
-            });
-
-    boolean success = condition.block(5000);
-    assertTrue(success);
   }
 
   @Test
@@ -117,6 +101,10 @@ public final class FacebookSdkPowerMockTest extends FacebookPowerMockTestCase {
 
   @Test
   public void testFacebookDomain() {
+    Whitebox.setInternalState(FacebookSdk.class, "sdkInitialized", new AtomicBoolean(true));
+    Whitebox.setInternalState(
+        FacebookSdk.class, "applicationContext", ApplicationProvider.getApplicationContext());
+
     FacebookSdk.setFacebookDomain("beta.facebook.com");
 
     String graphUrlBase = ServerProtocol.getGraphUrlBase();
@@ -156,7 +144,7 @@ public final class FacebookSdkPowerMockTest extends FacebookPowerMockTestCase {
 
   @Test
   public void testLoadDefaultsDoesNotOverwrite() throws Exception {
-    Whitebox.setInternalState(FacebookSdk.class, "sdkInitialized", true);
+    Whitebox.setInternalState(FacebookSdk.class, "sdkInitialized", new AtomicBoolean(true));
     FacebookSdk.setApplicationId("hello");
     FacebookSdk.setClientToken("world");
 

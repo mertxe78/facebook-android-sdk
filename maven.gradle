@@ -20,6 +20,7 @@
 
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'org.jetbrains.dokka'
 
 def isSnapshot = version.endsWith('-SNAPSHOT')
 def ossrhUsername = hasProperty('ossrhUsername') ? ossrhUsername : ""
@@ -28,7 +29,7 @@ def ossrhPassword = hasProperty('ossrhPassword') ? ossrhPassword : ""
 task setVersion {
     // The version will be derived from source
     project.version = null
-    def sdkVersionFile = file("${rootDir}/facebook-core/src/main/java/com/facebook/FacebookSdkVersion.java")
+    def sdkVersionFile = file("${rootDir}/facebook-core/src/main/java/com/facebook/FacebookSdkVersion.kt")
     sdkVersionFile.eachLine{
         def matcher = (it =~ /(?:.*BUILD = \")(.*)(?:\".*)/)
         if (matcher.matches()) {
@@ -93,6 +94,7 @@ signing {
 
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
+    excludes = ['**/*.kt'] // Exclude all kotlin files from javadoc file.
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     // JDK 1.8 is more strict then 1.7. Have JDK 1.8 behave like 1.7 for javadoc generation
     if (org.gradle.internal.jvm.Jvm.current().getJavaVersion() == JavaVersion.VERSION_1_8) {
@@ -107,12 +109,17 @@ task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
 
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
-    from android.sourceSets.main.java.sourceFiles
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    classifier 'javadoc'
+    from dokkaJavadoc.outputDirectory
 }
 
 artifacts {
       archives androidSourcesJar
-      archives androidJavadocsJar
+      archives javadocJar
 }
 
 afterEvaluate {

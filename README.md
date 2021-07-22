@@ -53,6 +53,9 @@ USAGE
 Facebook SDKs are broken up into separate modules as shown above. To ensure the most optimized use of
 space only install the modules that you intend to use. To get started, see the Installation section below.
 
+Any Facebook SDK initialization must occur only in the main process of the app. Use of Facebook SDK in processes other than the main process is not supported and will likely cause problems.
+
+
 INSTALLATION
 ------------
 Facebook SDKs are published to Maven as independent modules. To utilize a feature listed above
@@ -60,22 +63,22 @@ include the appropriate dependency (or dependencies) listed below in your `app/b
 ```gradle
 dependencies {
     // Facebook Core only (Analytics)
-    implementation 'com.facebook.android:facebook-core:8.1.0'
+    implementation 'com.facebook.android:facebook-core:11.1.0'
 
     // Facebook Login only
-    implementation 'com.facebook.android:facebook-login:8.1.0'
+    implementation 'com.facebook.android:facebook-login:11.1.0'
 
     // Facebook Share only
-    implementation 'com.facebook.android:facebook-share:8.1.0'
+    implementation 'com.facebook.android:facebook-share:11.1.0'
 
     // Facebook Messenger only
-    implementation 'com.facebook.android:facebook-messenger:8.1.0'
+    implementation 'com.facebook.android:facebook-messenger:11.1.0'
 
     // Facebook App Links only
-    implementation 'com.facebook.android:facebook-applinks:8.1.0'
+    implementation 'com.facebook.android:facebook-applinks:11.1.0'
 
     // Facebook Android SDK (everything)
-    implementation 'com.facebook.android:facebook-android-sdk:8.1.0'
+    implementation 'com.facebook.android:facebook-android-sdk:11.1.0'
 }
 ```
 

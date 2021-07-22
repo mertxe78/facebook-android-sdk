@@ -1,4 +1,4 @@
-name: Verify build with gradle
+name: Run testsuite with gradle
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows
 on: [push, pull_request]
 
@@ -9,5 +9,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Assemble and test all
-        run: ./gradlew assemble && GITHUB_ACTIONS=1 ./gradlew :facebook:test -i
+      - name: Run corekit testes
+        run:  GITHUB_ACTIONS=1 ./gradlew :facebook-core:test -i
+      - name: Run all tests
+        run:  GITHUB_ACTIONS=1 ./gradlew :facebook:test -i

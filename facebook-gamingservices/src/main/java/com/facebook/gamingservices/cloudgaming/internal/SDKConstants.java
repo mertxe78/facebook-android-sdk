@@ -84,6 +84,11 @@ public class SDKConstants {
   public static final String PARAM_KEY = "key";
   public static final String PARAM_VALUE = "value";
   public static final String PARAM_SCORE = "score";
+  public static final String PARAM_INITIAL_SCORE = "initialScore";
+  public static final String PARAM_SORT_ORDER = "sortOrder";
+  public static final String PARAM_SCORE_FORMAT = "scoreFormat";
+  public static final String PARAM_TITLE = "title";
+  public static final String PARAM_END_TIME = "endTime";
 
   // Share
   public static final String PARAM_INTENT = "intent";
@@ -111,7 +116,11 @@ public class SDKConstants {
   public static final String PARAM_GAME_REQUESTS_ACTION_TYPE = "actionType";
   public static final String PARAM_GAME_REQUESTS_TO = "to";
   public static final String PARAM_GAME_REQUESTS_MESSAGE = "message";
+  public static final String PARAM_GAME_REQUESTS_CTA = "cta";
   public static final String PARAM_GAME_REQUESTS_TITLE = "title";
   public static final String PARAM_GAME_REQUESTS_DATA = "data";
   public static final String PARAM_GAME_REQUESTS_OPTIONS = "options";
+
+  // Outlinking
+  public static final String PARAM_URL = "url";
 }

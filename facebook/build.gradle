@@ -19,7 +19,6 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
 project.group 'com.facebook.android'
@@ -30,7 +29,7 @@ project.ext.description = 'Facebook Android SDK'
 project.ext.url = 'https://github.com/facebook/facebook-android-sdk'
 
 dependencies {
-    def kotlin_ver = '1.3.31'
+    def kotlin_ver = project.ext.kotlinVersion
 
     // Facebook Dependencies
     api project(':facebook-core')
@@ -40,6 +39,7 @@ dependencies {
     api project(":facebook-applinks")
     api project(":facebook-messenger")
     api project(":facebook-gamingservices")
+    testImplementation project(":facebook-testutil")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_ver"
     // Unit Tests
@@ -48,6 +48,7 @@ dependencies {
     testImplementation 'androidx.test:core:1.0.0'
 
     testImplementation "org.mockito:mockito-inline:2.26.0"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     def powerMockVersion = '2.0.2'
     testImplementation "org.powermock:powermock-core:$powerMockVersion"
@@ -62,6 +63,7 @@ dependencies {
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
 
+    testImplementation "com.android.installreferrer:installreferrer:1.0"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_ver"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_ver"
 
@@ -99,7 +101,6 @@ android {
             java {
                 exclude '**/MonitorTest.java'
                 exclude '**/MonitorLoggingManagerTest.java'
-                exclude '**/AppEventsLoggerImplTest.java'
                 exclude '**/UserSettingsManagerTest.java'
                 exclude '**/LoginManagerTest.java'
 
@@ -109,7 +110,18 @@ android {
             }
         }
     }
-
+    testOptions {
+        unitTests.all {
+            jvmArgs '-XX:MaxPermSize=1024m'
+            maxHeapSize = "1024m"
+            // CrashShieldHandlerDebugTest is only available on Sandcastle and Github Actions
+            // Because local compiling environment may recompile CrashShieldHandler multiple times
+            // and generate false signals
+            if (System.getenv("SANDCASTLE") != "1" && System.getenv("GITHUB_ACTIONS") != "1") {
+                exclude "com/facebook/internal/instrument/crashshield/CrashShieldHandlerDebugTest.class"
+            }
+        }
+    }
 
     if (System.getenv("SANDCASTLE") == "1") {
         testOptions {
@@ -123,6 +135,7 @@ android {
         }
     }
 }
+
 //to be 100% sure, make sure no kotlin code in src for production use
 afterEvaluate {
     android.sourceSets.all { sourceSet ->
